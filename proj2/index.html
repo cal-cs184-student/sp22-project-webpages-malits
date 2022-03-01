@@ -43,10 +43,6 @@
 
 <h3 align="middle">Part 1: Bezier curves with 1D de Casteljau subdivision</h3>
 
-<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a
-	column in that row. You might find this useful for framing and showing your result images in an organized fashion.
-</p>
-
 <div align="middle">
 	<table style="width=100%">
 		<tr>
@@ -83,6 +79,8 @@
 	</table>
 </div>
 
+<p>With the Castelijau’s algorithm we take a set of points that form a line and then calculate midsections of each pair of points in the line parameterized by the value t. We then take this new line of points and recursively call the algorithm till we receive one point. This point is considered to be a point on the Bezier curve . By running the Castelijau’s algorithm iteratively through values of t 0 to 1, we can evaluate the entire Bezier curve of this line.</p>
+
 <div align="middle">
 	<table>
 	<tr>
@@ -104,6 +102,9 @@
 <img src="screenshots/teapot_bez.png" align="middle" width=800px/>
 <figcaption align="middle">Bezier Surface for teapot</figcaption>
 </div>
+
+<p>With surfaces we add a dimension to the problem, in order to account for this we solve for the bezier curve in one dimension and then with those points we solve for the bezier curve along the other.  Both parameters u and v are used the same way as t in the normal Castelijau’s algorithm and iterated through to give the points of the surface. We use u to move through one dimension as the parameterizing value and then we use v to calculate the curve in the next dimension. This curve can be thought of as moving through the dimension on all of the u parameterized curves.
+</p>
 
 <h2 align="middle">Section II: Sampling</h2>
 
