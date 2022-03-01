@@ -1,7 +1,211 @@
-<html>
-	<head>
-	</head>
-	<body>
-		Project 2 here
-	</body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<style>
+  body {
+    padding: 100px;
+    width: 1000px;
+    margin: auto;
+    text-align: left;
+    font-weight: 300;
+    font-family: 'Open Sans', sans-serif;
+    color: #121212;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Source Sans Pro', sans-serif;
+  }
+</style>
+<title>CS 184 Rasterizer</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+</head>
+
+<body>
+
+<h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2022</h1>
+<h1 align="middle">Project 2: MeshEdit</h1>
+<h2 align="middle">Max Litster (3034017250) and Aidan Meyer (SID)</h2>
+
+<br><br>
+
+<div>
+	<h2 align="middle">Overview</h2>
+	In this project, we implemented several rendering algorithms for triangle-based meshes to bring dynamic curves and surfaces to
+	our screens. As a whole, this bridged the gap from simple triangle rendering to more complex meshes like the teapot or tourus.
+	One of the largest takeaways from this project was the need to use sophisticated data structures to navigate the complexity of
+	such meshes. The half-edge in particular is capable of representing such complicated meshes, but is designed in such a way that
+	after surmounting the initial learning curve, one can navigate the meshes a relatively straightforward manner.
+</div>
+
+<br><br>
+
+<h2 align="middle">Section I: Bezier Curves and Surfaces</h2>
+
+<h3 align="middle">Part 1: Bezier curves with 1D de Casteljau subdivision</h3>
+
+<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a
+	column in that row. You might find this useful for framing and showing your result images in an organized fashion.
+</p>
+
+<div align="middle">
+	<table style="width=100%">
+		<tr>
+			<td>
+				<img src="screenshots/curve_0.png" align="middle" width="400px" />
+				<figcaption align="middle">Initial control points</figcaption>
+			</td>
+			<td>
+				<img src="screenshots/curve_1.png" align="middle" width="400px" />
+				<figcaption align="middle">Step 1</figcaption>
+			</td>
+		</tr>
+		<br>
+		<tr>
+			<td>
+				<img src="screenshots/curve2.png" align="middle" width="500px" />
+				<figcaption align="middle">Step 2</figcaption>
+			</td>
+			<td>
+				<img src="screenshots/curve3.png" align="middle" width="500px" />
+				<figcaption align="middle">Step 3</figcaption>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<img src="screenshots/curve4.png" align="middle" width="500px" />
+				<figcaption align="middle">Step 4</figcaption>
+			</td>
+			<td>
+				<img src="screenshots/curve_c.png" align="middle" width="500px" />
+				<figcaption align="middle">Final curve</figcaption>
+			</td>
+		</tr>
+	</table>
+</div>
+
+<div align="middle">
+	<table>
+	<tr>
+		<td>
+			<img src="screenshots/curve_modified_1.png" align="middle" width="500px" />
+			<figcaption align="middle">Adjustments to control points and `t`</figcaption>
+		</td>
+		<td>
+			<img src="screenshots/curve-Modified2.png" align="middle" width="500px" />
+			<figcaption align="middle">Adjustments to control points and `t`</figcaption>
+		</td>
+	</tr>
+	</table>
+</div>
+
+<h3 align="middle">Part 2: Bezier surfaces with separable 1D de Casteljau subdivision</h3>
+
+<div align="middle">
+<img src="screenshots/teapot_bez.png" align="middle" width=800px/>
+<figcaption align="middle">Bezier Surface for teapot</figcaption>
+</div>
+
+<h2 align="middle">Section II: Sampling</h2>
+
+<h3 align="middle">Part 3: Average normals for half-edge meshes</h3>
+
+<div align="middle">
+	<table>
+	<tr>
+		<td>
+			<img src="screenshots/mesh_bad_shading_og.png" align="middle" width="500px" />
+			<figcaption align="middle">Default shading</figcaption>
+		</td>
+		<td>
+			<img src="screenshots/teapot_good_shading.png" align="middle" width="500px" />
+			<figcaption align="middle">Weighted vertex normal shading</figcaption>
+		</td>
+	</tr>
+	</table>
+</div>
+
+
+<h3 align="middle">Part 4: Half-edge flip</h3>
+
+<div align="middle">
+	<table>
+	<tr>
+		<td>
+			<img src="screenshots/mesh_pre_flips.png" align="middle" width="500px" />
+			<figcaption align="middle">Before flips</figcaption>
+		</td>
+		<td>
+			<img src="screenshots/mesh_post_flips.png" align="middle" width="500px" />
+			<figcaption align="middle">After flips</figcaption>
+		</td>
+	</tr>
+	</table>
+
+	For this part of the project, our implementation was simple: we first gathered
+</div>
+
+
+<h3 align="middle">Part 5: Half-edge split</h3>
+
+<div align="middle">
+	<table>
+	<tr>
+		<td>
+			<img src="screenshots/mesh_before_splits.png" align="middle" width="500px" />
+			<figcaption align="middle">Before flips</figcaption>
+		</td>
+		<td>
+			<img src="screenshots/mesh_after_splits.png" align="middle" width="500px" />
+			<figcaption align="middle">After flips</figcaption>
+		</td>
+	</tr>
+	</table>
+</div>
+
+<h3 align="middle">Part 6: Loop subdivision for mesh upsampling</h3>
+
+<div align="middle">
+	<table style="width=100%">
+		<tr>
+			<td>
+				<img src="screenshots/upsampling0.png" align="middle" width="500px" />
+				<figcaption align="middle">Initial Cube</figcaption>
+			</td>
+			<td>
+				<img src="screenshots/upsampling1.png" align="middle" width="500px" />
+				<figcaption align="middle">Upsampling 1</figcaption>
+			</td>
+		</tr>
+		<br>
+		<tr>
+			<td>
+				<img src="screenshots/upsampling2.png" align="middle" width="500px" />
+				<figcaption align="middle">Upsampling 2</figcaption>
+			</td>
+			<td>
+				<img src="screenshots/upsampling3.png" align="middle" width="500px" />
+				<figcaption align="middle">Upsampling 3</figcaption>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<img src="screenshots/upsampling4.png" align="middle" width="500px" />
+				<figcaption align="middle">Upsampling 4</figcaption>
+			</td>
+			<td>
+				<img src="screenshots/upsampling5.png" align="middle" width="500px" />
+				<figcaption align="middle">Upsampling 5</figcaption>
+			</td>
+		</tr>
+	</table>
+</div>
+
+<h2 align="middle">Section III: Optional Extra Credit</h2>
+<p>If you are not participating in the optional mesh competition, don't worry about this section!</p>
+
+<h3 align="middle">Part 7: Design your own mesh!</h3>
+
+<a href="https://cal-cs184-student.github.io/sp22-project-webpages-malits/proj2/index.html">https://cal-cs184-student.github.io/sp22-project-webpages-malits/proj2/index.html</a>
+
+</body>
 </html>
