@@ -124,6 +124,13 @@
 	</table>
 </div>
 
+<br><br>
+<p>
+To compute the area-weighted vertex normal, we iterated through each face incident
+to a vertex and computed its normal. The iteration was done by navigating half-edges.
+We then summed the vertices and normalized the sum to get the area-weighted vertex norm,
+which we returned as the norm of the desired vertex.
+</p>
 
 <h3 align="middle">Part 4: Half-edge flip</h3>
 
@@ -141,7 +148,19 @@
 	</tr>
 	</table>
 
-	For this part of the project, our implementation was simple: we first gathered
+  <br><br>
+  <p>
+	Edge-flipping was implemented by explicitly reassigning each half-edge, face,
+  edge, and vertex to the flipped configuration shown in the spec. First, for
+  the incident triangles, we selected each vertex, edge, face, and half-edge,
+  and reassigned them to the new configuration. The implementation was a fairly
+  straightforward set of half-edge accesses and reassignments, however debugging
+  required meticulous sketching of the triangles pre and post-flip, and coding
+  explicit reassignments for each component of the triangle, even those that were
+  not changed. While this required some repetitive code, it made our debugging
+  journey fairly straightforward, as explicitly accessing and reassigning things
+  based on the diagram was fairly self-explanatory.
+  </p>
 </div>
 
 
@@ -160,6 +179,19 @@
 		</td>
 	</tr>
 	</table>
+
+  <br><br>
+  <p>
+  Edge-splitting was a bit more involved than edge-flipping, because we also had
+   to create new edges, half-edges, and a vertex midpoint.
+   Again, we explicitly reassigned each component of the triangle,
+   this time incorporating the new midpoint and corresponding new edges,
+   half-edges, and faces. Debugging was again relatively straightforward:
+   errors mostly arose from looking at how we may have incorrectly assigned
+   a particular vertex or edge. Our debugging journey mostly consisted of
+   scrutinizing our code to ensure that we correctly moved all of our pointers
+   / triangle attributes to match the desired configuration.
+ </p>
 </div>
 
 <h3 align="middle">Part 6: Loop subdivision for mesh upsampling</h3>
