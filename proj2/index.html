@@ -232,7 +232,7 @@ which we returned as the norm of the desired vertex.
 		</tr>
 	</table>
 </div>
-
+<br><br>
 For loop subdivision We first calculated new positions of old vectors and then new positions of vectors to be added between edges. We then split all existing edges and flipped the new edges that had both an old vertex and new vertex. To make sure we did not account half of the split edge as a new edge we added a boolean to the edge implementation called dup so that this edge would not get flipped. In splitting the edge we also assigned the newPosition of the new vertex to the newPosition of the edge that it originally split. Finally We updated the positions of all vertices to their newPosition. To debug we returned the algorithm before position updates to make sure the split and flip worked correctly. Then we had a bug related to position updating that was hidden in a wrong vertex assignment in the flip edge function. To debug this we did all sorts of things from changing the u values to analyzing the degree of the vertices.
 
 The sharp corners of the cube begin to dull and smoothen out as a result of the averaging. I can imagine that prepr-splitting would give shorter distances between vertices to average so the updated vertices would be less drastically averaged.
