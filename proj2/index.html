@@ -47,11 +47,11 @@
 	<table style="width=100%">
 		<tr>
 			<td>
-				<img src="screenshots/curve_0.png" align="middle" width="400px" />
+				<img src="screenshots/curve_0.png" align="middle" width="500px" />
 				<figcaption align="middle">Initial control points</figcaption>
 			</td>
 			<td>
-				<img src="screenshots/curve_1.png" align="middle" width="400px" />
+				<img src="screenshots/curve_1.png" align="middle" width="500px" />
 				<figcaption align="middle">Step 1</figcaption>
 			</td>
 		</tr>
@@ -233,9 +233,44 @@ which we returned as the norm of the desired vertex.
 	</table>
 </div>
 <br><br>
+
 For loop subdivision We first calculated new positions of old vectors and then new positions of vectors to be added between edges. We then split all existing edges and flipped the new edges that had both an old vertex and new vertex. To make sure we did not account half of the split edge as a new edge we added a boolean to the edge implementation called dup so that this edge would not get flipped. In splitting the edge we also assigned the newPosition of the new vertex to the newPosition of the edge that it originally split. Finally We updated the positions of all vertices to their newPosition. To debug we returned the algorithm before position updates to make sure the split and flip worked correctly. Then we had a bug related to position updating that was hidden in a wrong vertex assignment in the flip edge function. To debug this we did all sorts of things from changing the u values to analyzing the degree of the vertices.
 
-The sharp corners of the cube begin to dull and smoothen out as a result of the averaging. I can imagine that prepr-splitting would give shorter distances between vertices to average so the updated vertices would be less drastically averaged.
+The sharp corners of the cube begin to dull and smoothen out as a result of the averaging. After  prepr-splitting we saw that the edges were preserved slightly better and a symmetrical cube was preserved. This has to do with the complexity of the cube. With so few triangles representing the cube the new positions include scalars of vertices on the other face of the cube. Splitting beforehand makes the neighboring vertices less drastically different and preserves face symmetry.
+
+
+The following images demonstrates the effects of pre-flipping and pre-splitting the triangle faces.
+
+<div align="middle">
+	<table style="width=100%">
+		<tr>
+			<td>
+				<img src="screenshots/manual0.png" align="middle" width="500px" />
+				<figcaption align="middle">Initial cube with splits</figcaption>
+			</td>
+			<td>
+				<img src="screenshots/manual1.png" align="middle" width="500px" />
+				<figcaption align="middle">Single Upsample</figcaption>
+			</td>
+		</tr>
+		<br>
+		<tr>
+			<td>
+				<img src="screenshots/manual2.png" align="middle" width="500px" />
+				<figcaption align="middle">Second Upsample</figcaption>
+			</td>
+			<td>
+				<img src="screenshots/manual3.png" align="middle" width="500px" />
+				<figcaption align="middle">Third Upsample</figcaption>
+			</td>
+		</tr>
+	</table>
+</div>
+
+<div>
+  <img src="screenshots/manual4.png" align="middle" width="500px"/>
+  <figcaption align="middle">Upsampling a cube with a high amount of initial flips and splits"</figcaption>
+</div>
 
 
 <h2 align="middle">Section III: Optional Extra Credit</h2>
