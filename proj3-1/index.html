@@ -109,7 +109,7 @@
     <p>In order to implement direct lighting via uniform hemisphere sampling, we take the rays cast from the camera and identify those that intersect with an object in the scene. If it intersects at a point hit_p, we evaluate the lighting by integrating over the light arriving in a hemisphere around the hit point. This we determine via a Monte Carlo estimator.
 First, we reverse the direction of the ray colliding with the object to trace the light that returns to the camera. We then Sample N ray directions uniformly from the hemisphere surrounding the hit point. For each ray direction, we simulate a new ray originating from the hit point and trace it to see if it intersects with a light-emitting object. If it does, we trace the incoming light from that direction (determined via the emission function of the BSDF of the intersecting object) and multiply this by the `f` value of the original object’s BSDF. We sum these values as well as the cosine of the incoming ray, and normalize this total value by the PDF, and divide by the number of samples. </p>
 
-    <p> Importance sampling </p>
+    <p> For the second direct lighting function we did importance sampling. This relied on the light sources within the scene and receiving the sample based on the point and the light. This gave us a pdf that we use alternatively to uniform sampling in the last part. We then only calculated the reflectance if the object did not intersect anything between it and the light and if the incoming angle actually hit the surface. This has two benefits that we observed. It created a less noisy image and sped up the one_bounce since there were less samples needed to see surfaces that reflect light. </p>
 
     <div align="center">
         <table style="width=100%">
