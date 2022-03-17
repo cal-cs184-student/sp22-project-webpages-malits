@@ -1,7 +1,284 @@
-<html>
-	<head>
-	</head>
-	<body>
-		Project 3-1 here
-	</body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<style>
+    div.padded {
+      padding-top: 0px;
+      padding-right: 100px;
+      padding-bottom: 0.25in;
+      padding-left: 100px;
+    }
+  </style>
+<title>Your Name  |  CS 184</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="style.css" media="screen" />
+</head>
+<body>
+<br />
+<h1 align="middle">Assignment 3: PathTracer</h1>
+    <h2 align="middle">Max Litster and Aidan Meyer</h2>
+
+    <div class="padded">
+      <p> For this assignment we learned how to create images with perspective and varying degrees of detailed lighting.
+      This was accomplished via ray tracing: the process of simulating viewing rays launched from the camera, through pixels
+      on the screen to objects in scene, and tracing those rays back to their source to determine how bright a given pixel
+      should be. </p>
+    <p> This project was very complex: not only did we learn how to implement the increasingly intricate properties of
+      natural light (bouncing off surfaces that do and do not emit light, accounting for the properties of different materials),
+      but we also dealt with the complexities in simulating and displaying natural objects and perspectives. Additionally
+      we dealt with a lot of bugs in calculating intersections and implementing formulas, which trained us to appropriately
+      debug graphics programs, particularly when rendering is expensive and time-consuming. </p>
+    <p> Ultimately this was rewarding in that we generated cool images and got to really understand the process of rendering complicated
+      3D visuals with physically-accurate perspectives and lighting. </p>
+    <h2 align="middle">Part 1: Ray Generation and Intersection</h2>
+
+      <p>
+        For ray generation, we first scaled our x and y coordinates to that of the camera space by using the tangent and field-of-view formulas from the spec, and appropriate offsets following from the new dimensions. We then used these coordinates to get at the direction of the vector leaving the camera, and scaled this to world space. We then added the appropriate min and max t-values and return the given ray.
+        <br>
+        <br>
+        For primitive intersection we used the formulas defining a circle or triangle and used the ray equation to calculate their point of intersection.
+        <br>
+        <br>
+        For triangle intersection it is possible to use plane intersection and check if the intersected point is in the triangle with the classic in-triangle check used in the first project. We decided to use the  Möller–Trumbore intersection algorithm since it is optimized and uses Barrycentric coordinate definitions to check the intersection of a ray and a triangle.
+        <br>
+        <br>
+        Additionally we were able to throw out valid solutions to the Matrix-Vector equation posed by the M-T algorithm that were not consistent with the barycentric coordinates by ensuring that the intersection time t was valid and the barycentric coordinates appropriately added to 1.
+        <br>
+        <br>
+      </p>
+
+        <div align="center">
+            <table style="width=100%">
+                <tr>
+                    <td align="middle">
+                    <img src="images/balls_dae.png" width="480px" />
+                    <figcaption align="middle">Simple Ball Rendering</figcaption>
+                </tr>
+                <tr>
+                  <td align="middle">
+                  <img src="images/cow_dae.png" width="480px" />
+                  <figcaption align="middle">Simple Cow Rendering</figcaption>
+                </tr>
+            </table>
+        </div>
+
+    <h2 align="middle">Part 2</h2>
+
+    <p>For the BVH construction we split on the longest dimension at the average
+      position in that dimension to ensure about half of the primitives were on
+      either side of the partition after the split. After parting the primitives
+       in this way we constructed left and right nodes to create a tree like
+       structure and recursively called the construct until we hit the leaf case
+       where the max_leaf_size was not exceeded by the amount of primitives.
+       </p>
+
+    <div align="center">
+        <table style="width=100%">
+            <tr>
+                <td align="middle">
+                <img src="images/planck_1.png" width="480px" />
+                <figcaption align="middle">BVH-Accelerated .dae</figcaption>
+            </tr>
+            <tr>
+              <td align="middle">
+              <img src="images/planck_2.png" width="480px" />
+              <figcaption align="middle">BVH-Accelerated .dae</figcaption>
+            </tr>
+            <tr>
+              <td align="middle">
+              <img src="images/weird_guy.png" width="480px" />
+              <figcaption align="middle">BVH-Accelerated .dae</figcaption>
+            </tr>
+        </table>
+    </div>
+
+    <p>The runtime after applying BVH acceleration dramatically decreased.
+      After the BVH Acceleration implementation the console completed the render
+      in (0.0019 sec) whereas before the render completed in 36.6670s. The BVH
+      of course took a longer time to construct, but this difference is less than
+       a second. With this preprocessing we were able to get a dramatic speed up.
+        This behavior was expected as it changes the complexity of the problem from O(N) to O(logN).
+        We no longer check every primitive with every ray, but rather traverse
+        the BVH with bbox intersection calculations, greatly decreasing the number
+        of primitives we try to intersect with our ray.
+    </p>
+
+
+    <h2 align="middle">Part 3</h2>
+
+    <p>In order to implement direct lighting via uniform hemisphere sampling, we take the rays cast from the camera and identify those that intersect with an object in the scene. If it intersects at a point hit_p, we evaluate the lighting by integrating over the light arriving in a hemisphere around the hit point. This we determine via a Monte Carlo estimator.
+First, we reverse the direction of the ray colliding with the object to trace the light that returns to the camera. We then Sample N ray directions uniformly from the hemisphere surrounding the hit point. For each ray direction, we simulate a new ray originating from the hit point and trace it to see if it intersects with a light-emitting object. If it does, we trace the incoming light from that direction (determined via the emission function of the BSDF of the intersecting object) and multiply this by the `f` value of the original object’s BSDF. We sum these values as well as the cosine of the incoming ray, and normalize this total value by the PDF, and divide by the number of samples. </p>
+
+    <p> Importance sampling </p>
+
+    <div align="center">
+        <table style="width=100%">
+            <tr>
+              <td align="middle">
+              <img src="images/bunny_direct.png" width="480px" />
+              <figcaption align="middle">Direct Hemisphere Lighting</figcaption>
+            </tr>
+            <tr>
+              <td align="middle">
+              <img src="images/bunny_importance.png" width="480px" />
+              <figcaption align="middle">Importance Lighting</figcaption>
+            </tr>
+        </table>
+    </div>
+
+    <p>Light-Sampling with Different Light Rays: As the number of rays increase, the shadows become
+    better defined and less noisy.</p>
+
+    <div align="center">
+        <table style="width=100%">
+            <tr>
+              <td align="middle">
+              <img src="images/bunny_3_l1.png" width="480px" />
+              <figcaption align="middle">1 light ray</figcaption>
+            </tr>
+            <tr>
+              <td align="middle">
+              <img src="images/bunny_3_l4.png" width="480px" />
+              <figcaption align="middle">4 light rays</figcaption>
+            </tr>
+            <tr>
+              <td align="middle">
+              <img src="images/bunny_3_l16.png" width="480px" />
+              <figcaption align="middle">16 light rays</figcaption>
+            </tr>
+            <tr>
+              <td align="middle">
+              <img src="images/bunny_3_l64.png" width="480px" />
+              <figcaption align="middle">64 light rays</figcaption>
+            </tr>
+        </table>
+    </div>
+
+    <p>With importance sampling, we put more weight on sampling rays that come from the light sources, because
+      they are more likely to actually emit light than surfaces with low probability of emitting light. As a result
+    the image displays sharper, less noisy and more realistic shadows.</p>
+
+    <h2 align="middle">Part 4</h2>
+
+    <p>
+For indirect lighting we implemented multiple bounces for one point on an object. This allowed us to include the reflected light from other surfaces into the final illuminance that goes into the pixel ray. We did this by including a depth and then later a russian roulette implementation that probabilistically ends the recursive bounce call. At each bounce we returned the direct one bounce lighting and then used then sent out a recursive call to the function and included the returned reflectance. This illuminates the parts of the scene that aren’t directly under a light.
+</p>
+
+    <div align="center">
+        <table style="width=100%">
+            <tr>
+              <td align="middle">
+              <img src="images/bunny_direct.png" width="480px" />
+              <figcaption align="middle">Direct Hemisphere Lighting (Global)</figcaption>
+            </tr>
+            <tr>
+              <td align="middle">
+              <img src="images/bunny_indirect_only.png" width="480px" />
+              <figcaption align="middle">Indirect Hemisphere Lighting (Global)</figcaption>
+            </tr>
+        </table>
+    </div>
+
+    <p>As we increase the depth of rays that we fire, areas like the dark area beneath the bunny are illuminated
+    because we simulate the light reflecting off the ground and other surfaces.</p>
+
+    <div align="center">
+        <table style="width=100%">
+            <tr>
+              <td align="middle">
+              <img src="images/bunny_lvl_0.png" width="480px" />
+              <figcaption align="middle">Depth 0</figcaption>
+            </tr>
+            <tr>
+              <td align="middle">
+              <img src="images/bunny_lvl_1.png" width="480px" />
+              <figcaption align="middle">Depth 1</figcaption>
+            </tr>
+            <tr>
+              <td align="middle">
+              <img src="images/bunny_lvl_2.png" width="480px" />
+              <figcaption align="middle">Depth 2</figcaption>
+            </tr>
+            <tr>
+              <td align="middle">
+              <img src="images/bunny_lvl_3.png" width="480px" />
+              <figcaption align="middle">Depth 3</figcaption>
+            </tr>
+            <tr>
+              <td align="middle">
+              <img src="images/bunny_lvl_100.png" width="480px" />
+              <figcaption align="middle">Depth 100</figcaption>
+            </tr>
+        </table>
+    </div>
+
+    <p>Note that noise decreases as the number of samples increase.</p>
+
+    <div align="center">
+        <table style="width=100%">
+            <tr>
+              <td align="middle">
+              <img src="images/bunny_s_1.png" width="480px" />
+              <figcaption align="middle">1 Sample Per Pixel</figcaption>
+            </tr>
+            <tr>
+              <td align="middle">
+              <img src="images/bunny_s_2.png" width="480px" />
+              <figcaption align="middle">2 Samples Per Pixel</figcaption>
+            </tr>
+            <tr>
+              <td align="middle">
+              <img src="images/bunny_s_4.png" width="480px" />
+              <figcaption align="middle">4 Samples Per Pixel</figcaption>
+            </tr>
+            <tr>
+              <td align="middle">
+              <img src="images/bunny_s_8.png" width="480px" />
+              <figcaption align="middle">8 Samples Per Pixel</figcaption>
+            </tr>
+            <tr>
+              <td align="middle">
+              <img src="images/bunny_s_16.png" width="480px" />
+              <figcaption align="middle">16 Samples Per Pixel</figcaption>
+            </tr>
+            <tr>
+              <td align="middle">
+              <img src="images/bunny_s_64.png" width="480px" />
+              <figcaption align="middle">64 Samples Per Pixel</figcaption>
+            </tr>
+            <tr>
+              <td align="middle">
+              <img src="images/bunny_s_1024.png" width="480px" />
+              <figcaption align="middle">1024 Samples Per Pixel</figcaption>
+            </tr>
+        </table>
+    </div>
+
+  <h2 align="middle">Part 5</h2>
+
+  <p>Adaptive sampling was implemented by computing the illuminance of the radiance at each step.
+    As we iterated over the number of samples, we kept a running sum of the illuminance and the
+    squared illuminance. With these sums, we computed the mean and standard deviation / variance
+    every samplesPerBatch iterations. We then checked whether or not the variable ‘I’ as defined
+    in the spec, was less than the mean times the maxTolerance, indicating that our pixel value
+    fell within the confidence interval. If so, we broke with the loop and wrote out our value
+    to the sampleCountBuffer.  </p>
+
+    <div align="center">
+        <table style="width=100%">
+            <tr>
+              <td align="middle">
+              <img src="images/bunny.png" width="480px" />
+              <figcaption align="middle">Adaptive Sampling with the Bunny</figcaption>
+            </tr>
+            <tr>
+              <td align="middle">
+              <img src="images/bunny_rate.png" width="480px" />
+              <figcaption align="middle">Sampling Rate</figcaption>
+            </tr>
+        </table>
+    </div>
+
+</div>
+</body>
 </html>
