@@ -31,7 +31,15 @@
         <p>Aidan and I collaborated really well! We split up the work and checked in to review each other's code and explain our design decisions.
           We debugged one another's code to pick up on things the other may have missed. As roommates, collaboration and time coordination is pretty easy.
         </p>
-    <h2 align="middle">Part 2: Microfacet BSDF</h2>
+    <h2 align="middle">Part 2: Microfacet Material</h2>
+    <br>
+    For our implementation of the Microfacet BSDF we implemented the formulas outlined in the spec. First,
+    implementing the 'f' function by computing the desired quotient:
+    <img align="center" src="images/formula.png"/>
+    <br>
+    The bulk of this part of the porject consisted of implementing the formulas outlined in the spec. Computing importace sampling (Task 4 in this part) was a bit
+    more difficult because we had to figure out how to compute the reflection as well as the h vector from the sampled angles. Once derived though, we achieved some cool results!
+
     First, note the effect of changing roughness (alpha): the lower the roughness, the more reflective the material. As it gets rougher (higher alpha), the reflectiveness
     decreases.
     <div align="center">
@@ -58,9 +66,11 @@
             </tr>
         </table>
     </div>
-    Differences between hemisphere sampling and importance sampling.
+    The following images show the differences between hemisphere sampling and importance sampling.
     As you can see, hemisphere sampling is noisier while importance sampling
-    creates much more directed and realistic shading effects.
+    creates much more directed and realistic shading effects. We struggled a bit
+    to reduce the noise in these images, but this likely would be resolved by
+    increasing the sampling rate per pixel from 64 to a greater value.
     <div align="center">
         <table style="width=100%">
             <tr>
@@ -75,17 +85,26 @@
             </tr>
         </table>
     </div>
-    <img align="middle" src="images/dragon_iron.png" width="480px" />
-    <figcaption align="middle">An example of rendering material with iron.</figcaption>
+    <img align="center" src="images/dragon_iron.png" width="480px" />
+    <figcaption align="center">An example of rendering material with iron.</figcaption>
 
 
-    <h2 align="middle">Part 4:</h2>
+    <h2 align="middle">Part 4: Depth-of-Field</h2>
     A pinhole camera model treats the scene as viewed through a pinhole: where a direct ray is shot from a pixel on the screen to the objects
     in scene, the intersections determining what we display. The thin-lens model introduces the effect of a curved lens, where we sample locations on
     the glass surface and generate a reflected ray to simulate the visuals of a lens. Instead of a direct ray shooting from image space to scene,
-    we now reflect that ray through the curved surface of the lens. To compute this, we first use the pinhole ray-tracing procedure to identify
+    we now reflect that ray through the curved surface of the lens.
+    <br>
+    To compute this, we first use the pinhole ray-tracing procedure to identify
     a point in the scene that our ray intersects. From there, we sample a location on the lens and generate a new ray from that point on the lens
-    to the intersection point in the scene. By using this lens as well as a ray generated at a pixel on the image
+    to the intersection point in the scene.
+    <br>
+    This new ray is no longer just a direct line from pixel on the image to an object in the world space. Instead, it reflects the curvature of
+    the lens and gives us a series of cool perceptive effects that showcase the depth of the field of view. This implementation was fairly straightforward,
+    but we had some trouble with the intersection calculations which were very tricky! We ended up leveraging the intersection formula and the ray
+    computed as done in the original ray-tracing assignment to find its intersection with the desired plane on the z-axis.
+    <br>
+    Below are some examples!
     <div align="center">
         <table style="width=100%">
             <tr>
@@ -110,7 +129,7 @@
             </tr>
         </table>
     </div>
-    Effects of different apertrue sizes
+    Here are the effects of different aperture sizes
     <div align="center">
         <table style="width=100%">
             <tr>
