@@ -1,7 +1,114 @@
-<html>
-	<head>
-	</head>
-	<body>
-		Project 4 here
-	</body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<style>
+  body {
+    padding: 100px;
+    width: 1000px;
+    margin: auto;
+    text-align: left;
+    font-weight: 300;
+    font-family: 'Open Sans', sans-serif;
+    color: #121212;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Source Sans Pro', sans-serif;
+  }
+</style>
+<title>CS 184 Clothsim</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+</head>
+
+
+<body>
+
+<h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2017</h1>
+<h1 align="middle">Project 4: Cloth Simulator</h1>
+<h2 align="middle">Max Litster & Aidan Meyer</h2>
+
+<br><br>
+
+<div>
+
+<h2 align="middle">Overview</h2>
+<p>In this project, we implemented a realistic simulation of cloth material
+using the masses-and-springs model described in lecture. First, we implemented
+the isolated cloth simulation as well as the effects of forces, modeled via
+numerical integration. Afterwards we simulated collisions with spheres and planes,
+and then implemented more robust collisions with different masses on the cloth and
+the cloth itself. Finally we implemented a suite of shaders to bring our cloth
+to life in a realistic manner.</p>
+<br><br>
+<h2 align="middle">Part I: Masses and springs</h2>
+<p>For the first part of the project, we implemented a wireframe model of the cloth based
+on the masses-and-springs framework outlined in lecture and the spec. This consists of
+an array of point masses arranged in a grid, between which different constraints are acting
+to bring the cloth to life with realistic physics. First, we implemented an evenly-spaced
+grid of point masses. This was fairly straightforward for a horizontal orientation,
+but we ran into some bugs in the vertical case because the function we used to generate a random
+offset for our z-coordinate was not between 0 and 1 as we expected. Instead, it was between
+0 and RAND_MAX, a constant, and to realize we had to scale it required some careful debugging.
+<br>
+We then turned to implement the constraints using the given data structures. The three constraints
+were of the structural, shearing, and bending categories and existed between different pairs of
+point masses relative to their positions on the grid: structural constraints exist between a point mass
+and the mass above and to the left of it, shearing constraints between a point mass and the mass to its
+diagonal upper left and diagonal upper right, and bending between a point mass and mass two away to the left
+and the mass two above it. These come from the spec. A tricky part of debugging was navigating
+the point mass array with careful pointer arithmetic, both to load the masses into the array and
+create the constraints between pairs of masses.
+</p>
+<br><br>
+<h2 align="middle">Part II: Simulation via Numerical Integration</h2>
+In this part, we brought the cloth to life by implementing the physics behind the forces driving the motion of
+the cloth. The simulation uniformly applies accelerations to each point mass in the cloth. The total force
+acting on a point mass is composed of forces like gravity and the internal corrective forces of the spring.
+We implemented classical physics equations for computing the force acting on a point, and used numerical (Verlet)
+integration to calculate new point mass positions. Lastly, we implemented constraints to ensure that the springs,
+and cloth as a whole, did not see unrealistic deformation.
+<br>
+We now see the effects of varying the spring constant, Ks, the density and damping effects on the cloth.
+<br>
+For Low ks the whole mesh becomes very stretched in the direction of the the external forces. This is because a low string constant will not pull to resting state as readily so the springs are easily stretched to maximum length which is bounded by the 10% constraint. With high ks we get an almost stiff fall, the springs stay pulled to their resting state as expected when we raise the spring constant.
+<br>
+For low density the object falls more gradually, this can be attributed to the calculation of force being acceleration multiplied by the mass. For higher density the cloth falls quickly and has more creases, These can be attributed to the strain on the springs due to the added weight.
+<br>
+With very low damping we observe erratic movement of the cloth which seems to take very long to converge to a steady state if at all. When the damping is high the fall is smooth, but almost too stiff. With too much damping we lose the fluid-like characteristic of the cloth.
+<br>
+<br><br>
+<h2 align="middle">Part III: Handling Collisions with Other Objects</h2>
+This part required us to simulate the behavior of the cloth when it collides with other objects. Specifically, a sphere and a plane. This required us to compute where
+point masses would collide with the surface of the object, and how to correct the position of the mass when it clips through the object to make sure that it renders
+realistically. Additionally, we included the effects of friction to ensure that the simulationj was physically accurate.
+<br>
+Debugging the correction vector proved a bit difficult, as especially when the vertical cloth collided with the plane it had a tendency to clip through the surface.
+Luckily we were able to visualize the problem and derive the linear-algebraic solutions from there.
+<br>
+The cloth rested on the sphere with different appearance depending on the value of the spring constant. The difference here is with low ks the cloth hugs the ball pretty tightly and there is a larger frequency of folds that are small. The higher the spring constant get the more tight the springs become causing a result of larger folds with less frequency. The tightness of the springs cause the cloth to resist hugging the sphere’s surface so the folds shoot outward more and float off because of the tight springs.
+<br><br>
+<h2 align="middle">Part IV: Handling Self-Collision</h2>
+<p>
+One of the most important aspects of the cloth's physical accuracy was ensuring that it collided realistically with itself.
+To do this, we had to ensure that point masses were checking one another to see if they were colliding, and if so, that the position was corrected accordingly.
+This proved quite difficult and a naive solution would be quite slow, so we implemented spatial hashing, which divided the space into
+several boxes, and used the coordinates relative to those boxes to compute a hash-code. We used a simple base-64 hash code which seemed to be effective after
+some basic tests. Once our points were hashed, with each step of the simulation we built our hash table and checked for each point whether or not it collided
+with another point on the cloth. A 'self-collision', unlike the collision with other objects in the previous part.
+<br>
+Various issues in debugging made this part difficult to debug. Particularly, in attempting to debug the vertical grid generation, issues arose with the z-coordinate
+that manifested in checking for surrounding points on the cloth in self-collision. Luckily, when fixed (changing the way we generate the initial z-coordinate), the
+result was very satisfying!
+</p>
+<h2 align="middle"> Part V: Shaders</h2>
+<p>In this part we implemented shaders to add realistic lighting effects to our project. Shaders are more efficient ways to simulate realistic lighting, as ray-tracing
+  carries heavy overhead and long computation time. A shader program consists of a vertex and fragment file. The vertex file modifies the geometry of a vertex (i.e., changing its normal position)
+  while the fragment file outputs a color vector to that modified geometry to achieve a realistic lighting effect. Shaders are built to run on fragments output by the rasterizer
+  so they can be easily parallelized and run quickly on a GPU.
+  <br>
+  The Blinn-Phong model combines three simulated lighting effects: specular, ambient and diffuse lighting. It computes each of these lighting terms and sums them up,
+  leading to a more realistic lighting effect with diffuse lighting. The Blinn-Phong shader captures a more varied lighting effect that varies across the surface
+  depending on the position of the light source. One can observe the combination of the three lighting terms in the associated screenshots.
+</body>
+https://cal-cs184-student.github.io/sp22-project-webpages-malits/proj4/index.html
 </html>
