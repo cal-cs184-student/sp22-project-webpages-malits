@@ -59,8 +59,35 @@ and the mass two above it. These come from the spec. A tricky part of debugging 
 the point mass array with careful pointer arithmetic, both to load the masses into the array and
 create the constraints between pairs of masses.
 </p>
+<div align="middle">
+	<table style="width=100%">
+		<tr>
+			<td>
+				<img src="images/part1/angle0.png" align="middle" width="500px" />
+				<figcaption align="middle">Close-up of the cloth constraints</figcaption>
+			</td>
+			<td>
+				<img src="images/part1/only_shear.png" align="middle" width="500px" />
+				<figcaption align="middle">Only shear constraints</figcaption>
+			</td>
+		</tr>
+		<br>
+		<tr>
+			<td>
+				<img src="images/part1/no_sear.png" align="middle" width="500px" />
+				<figcaption align="middle">No shear constraints</figcaption>
+			</td>
+			<td>
+				<img src="images/part1/all_constraints.png" align="middle" width="500px" />
+				<figcaption align="middle">All constraints</figcaption>
+			</td>
+		</tr>
+  </table>
+</div>
 <br><br>
 <h2 align="middle">Part II: Simulation via Numerical Integration</h2>
+<img src="images/part2/pinned4_resting.png" align="middle" width="500px" />
+<figcaption align="middle">Pinned cloth at rest</figcaption>
 In this part, we brought the cloth to life by implementing the physics behind the forces driving the motion of
 the cloth. The simulation uniformly applies accelerations to each point mass in the cloth. The total force
 acting on a point mass is composed of forces like gravity and the internal corrective forces of the spring.
@@ -70,10 +97,53 @@ and cloth as a whole, did not see unrealistic deformation.
 <br>
 We now see the effects of varying the spring constant, Ks, the density and damping effects on the cloth.
 <br>
+<div align="middle">
+	<table style="width=100%">
+		<tr>
+			<td>
+				<img src="images/part2/low_ks.png" align="middle" width="500px" />
+				<figcaption align="middle">Low Spring Constant Ks</figcaption>
+			</td>
+			<td>
+				<img src="images/part2/low_ks.png" align="middle" width="500px" />
+				<figcaption align="middle">High Spring Constant Ks</figcaption>
+			</td>
+		</tr>
+  </table>
+</div>
+<br>
 For Low ks the whole mesh becomes very stretched in the direction of the the external forces. This is because a low string constant will not pull to resting state as readily so the springs are easily stretched to maximum length which is bounded by the 10% constraint. With high ks we get an almost stiff fall, the springs stay pulled to their resting state as expected when we raise the spring constant.
 <br>
+<div align="middle">
+	<table style="width=100%">
+		<tr>
+			<td>
+				<img src="images/part2/low_density.png" align="middle" width="500px" />
+				<figcaption align="middle">Low Density</figcaption>
+			</td>
+			<td>
+				<img src="images/part2/low_ks.png" align="middle" width="500px" />
+				<figcaption align="middle">High Density</figcaption>
+			</td>
+		</tr>
+  </table>
+</div>
 For low density the object falls more gradually, this can be attributed to the calculation of force being acceleration multiplied by the mass. For higher density the cloth falls quickly and has more creases, These can be attributed to the strain on the springs due to the added weight.
 <br>
+<div align="middle">
+	<table style="width=100%">
+		<tr>
+			<td>
+				<img src="images/part2/low_damping_flops_around.png" align="middle" width="500px" />
+				<figcaption align="middle">Low Damping</figcaption>
+			</td>
+			<td>
+				<img src="images/part2/high_damping_falls_slow.png" align="middle" width="500px" />
+				<figcaption align="middle">High Damping</figcaption>
+			</td>
+		</tr>
+  </table>
+</div>
 With very low damping we observe erratic movement of the cloth which seems to take very long to converge to a steady state if at all. When the damping is high the fall is smooth, but almost too stiff. With too much damping we lose the fluid-like characteristic of the cloth.
 <br>
 <br><br>
@@ -86,6 +156,25 @@ Debugging the correction vector proved a bit difficult, as especially when the v
 Luckily we were able to visualize the problem and derive the linear-algebraic solutions from there.
 <br>
 The cloth rested on the sphere with different appearance depending on the value of the spring constant. The difference here is with low ks the cloth hugs the ball pretty tightly and there is a larger frequency of folds that are small. The higher the spring constant get the more tight the springs become causing a result of larger folds with less frequency. The tightness of the springs cause the cloth to resist hugging the sphere’s surface so the folds shoot outward more and float off because of the tight springs.
+<br>
+<div align="middle">
+	<table style="width=100%">
+		<tr>
+			<td>
+				<img src="images/part3/ks_500.png" align="middle" width="500px" />
+				<figcaption align="middle">Ks=500</figcaption>
+			</td>
+			<td>
+				<img src="images/part3/ks_5000.png" align="middle" width="500px" />
+				<figcaption align="middle">Ks=5000</figcaption>
+			</td>
+      <td>
+				<img src="images/part3/ks_50000.png" align="middle" width="500px" />
+				<figcaption align="middle">Ks=50000</figcaption>
+			</td>
+		</tr>
+  </table>
+</div>
 <br><br>
 <h2 align="middle">Part IV: Handling Self-Collision</h2>
 <p>
