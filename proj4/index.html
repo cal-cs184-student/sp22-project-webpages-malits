@@ -189,6 +189,37 @@ Various issues in debugging made this part difficult to debug. Particularly, in 
 that manifested in checking for surrounding points on the cloth in self-collision. Luckily, when fixed (changing the way we generate the initial z-coordinate), the
 result was very satisfying!
 </p>
+<div align="middle">
+	<table style="width=100%">
+		<tr>
+			<td>
+				<img src="images/part4/one.png" align="middle" width="500px" />
+				<figcaption align="middle">Initial Self-Collision</figcaption>
+			</td>
+			<td>
+				<img src="images/part4/two.png" align="middle" width="500px" />
+				<figcaption align="middle">Halfway</figcaption>
+			</td>
+      <td>
+				<img src="images/part4/three.png" align="middle" width="500px" />
+				<figcaption align="middle">Cloth at rest</figcaption>
+			</td>
+		</tr>
+  </table>
+</div>
+<div align="middle">
+	<table style="width=100%">
+		<tr>
+			<td>
+				<img src="images/part4/high_density.png" align="middle" width="500px" />
+				<figcaption align="middle">High Density: Cloth begins to fold more towards the top as well</figcaption>
+			</td>
+			<td>
+				<img src="images/part4/low_ks.png" align="middle" width="500px" />
+				<figcaption align="middle">Low Ks: bunches more towards the bottom of the cloth </figcaption>
+			</td>
+    </table>
+</div>
 <h2 align="middle"> Part V: Shaders</h2>
 <p>In this part we implemented shaders to add realistic lighting effects to our project. Shaders are more efficient ways to simulate realistic lighting, as ray-tracing
   carries heavy overhead and long computation time. A shader program consists of a vertex and fragment file. The vertex file modifies the geometry of a vertex (i.e., changing its normal position)
@@ -198,6 +229,95 @@ result was very satisfying!
   The Blinn-Phong model combines three simulated lighting effects: specular, ambient and diffuse lighting. It computes each of these lighting terms and sums them up,
   leading to a more realistic lighting effect with diffuse lighting. The Blinn-Phong shader captures a more varied lighting effect that varies across the surface
   depending on the position of the light source. One can observe the combination of the three lighting terms in the associated screenshots.
+  <div align="middle">
+  	<table style="width=100%">
+  		<tr>
+  			<td>
+  				<img src="images/part5/p5_ambient.png" align="middle" width="500px" />
+  				<figcaption align="middle">Blinn-Phong: Ambient Only</figcaption>
+  			</td>
+  			<td>
+  				<img src="images/part5/p5_diffuse.png" align="middle" width="500px" />
+  				<figcaption align="middle">Blinn-Phong: Diffuse Only</figcaption>
+  			</td>
+  		</tr>
+  		<br>
+  		<tr>
+  			<td>
+  				<img src="images/part5/p5_specular.png" align="middle" width="500px" />
+  				<figcaption align="middle">Blinn-Phone: Specular Only</figcaption>
+  			</td>
+  			<td>
+  				<img src="images/part5/p5_total.png" align="middle" width="500px" />
+  				<figcaption align="middle">Blinn-Phong: Total Lighting</figcaption>
+  			</td>
+  		</tr>
+    </table>
+  </div>
+  <br><br>
+  <img src="images/part5/p5_custom_texture.png" align="middle" width="500px" />
+  <figcaption align="middle">Custom Texture</figcaption>
+  <br><br>
+  <div align="middle">
+  	<table style="width=100%">
+  		<tr>
+  			<td>
+  				<img src="images/part5/p5_mirror_sphere.png" align="middle" width="500px" />
+  				<figcaption align="middle">Mirror Sphere</figcaption>
+  			</td>
+  			<td>
+  				<img src="images/part5/p5_mirror_cloth.png" align="middle" width="500px" />
+  				<figcaption align="middle">Mirror Cloth</figcaption>
+  			</td>
+  		</tr>
+    </table>
+  </div>
+  <div align="middle">
+  	<table style="width=100%">
+  		<tr>
+  			<td>
+  				<img src="images/part5/sphere_bump.png" align="middle" width="500px" />
+  				<figcaption align="middle">Bump mapping on the sphere</figcaption>
+  			</td>
+  			<td>
+  				<img src="images/part5/cloth_bump.png" align="middle" width="500px" />
+  				<figcaption align="middle">Bump Mapping on the Cloth</figcaption>
+  			</td>
+        <td>
+  				<img src="images/part5/sphere_displacement.png" align="middle" width="500px" />
+  				<figcaption align="middle">Displacement Mapping on the sphere</figcaption>
+  			</td>
+  		</tr>
+    </table>
+  </div>
+  Displacement mapping modifies the normals' geometry while bump mapping just modifies the output color to realistically simulate bumps on the sphere. It does not change the normals. Displacement does.
+  <div align="middle">
+  	<table style="width=100%">
+  		<tr>
+  			<td>
+  				<img src="images/part5/16_bump.png" align="middle" width="500px" />
+  				<figcaption align="middle">Bump mapping with -o 16 -a 16</figcaption>
+  			</td>
+  			<td>
+  				<img src="images/part4/16_disp.png" align="middle" width="500px" />
+  				<figcaption align="middle">Displacement mapping, same settings</figcaption>
+  			</td>
+      </tr>
+      <br>
+      <tr>
+  			<td>
+  				<img src="images/part5/high_density.png" align="middle" width="500px" />
+  				<figcaption align="middle">Bump mapping -o 128 -a 128</figcaption>
+  			</td>
+  			<td>
+  				<img src="images/part4/low_ks.png" align="middle" width="500px" />
+  				<figcaption align="middle">Displacement same settings</figcaption>
+  			</td>
+      </tr>
+      </table>
+    </div>
+    Changing these settings demonstrate that both shaders see a change in coarseness. But in displacement mapping this is much more noticeable: the geometry is quite smooth at 16, but sees more ridges when we increase the coarseness to 128.
+  </div>
 </body>
 https://cal-cs184-student.github.io/sp22-project-webpages-malits/proj4/index.html
 </html>
