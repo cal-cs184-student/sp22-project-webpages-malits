@@ -1,0 +1,80 @@
+<html>
+	<head>
+	</head>
+	<body>
+		<h1>CS184 Final Project: MeshCut</h1>
+		<h2>
+			Project Overview
+		</h2>
+		<p>
+			Our project concerns rendering a realistic cut of a mesh.
+			In order to do so, we implement a basic framework for cutting
+			a mesh that relies on modifying the components of the mesh
+			that we worked with in Project 2, contained in the Half-Edge
+			data structure, and then plan to enable parameterized cuts
+			(i.e., defining different planes to cut across) and differing levels
+			of "stickiness" that cause the mesh to resist the cut or separate in different
+			ways.
+		</p>
+		<h2>
+			Final Project Milestone Report
+		</h2>
+			<h3>
+				Project Status
+			</h3>
+			<p>
+				Currently, the project builds on the Project 2 GUI to implement a basic
+				mesh operation that we dub "clean cut": a simple separation of the mesh
+				into a left and right side of the cut that slices the mesh by removing the
+				primitives in the middle of the two sides; those that intersect the
+				simple vertical plane that we cut across.
+				<br><br>
+				To accomplish this, we iterate through the half-edges of the mesh, using
+				dot product of the difference between the vertex position and point defining
+				the plane and the normal vector of the plane to determine whether it lies to
+				the right or left of the cut. From here, we collect a list of edges
+				that see one vertex on the right and the other on the left. We consider these
+				'cross-edges' (as they cross the cut) and remove them. What remains is a mesh
+				cut into two pieces.
+			</p>
+			<h3>
+				Preliminary Results
+			</h3>
+			<p>
+				As the following screenshot shows, we have achieved a basic "clean cut" implementation.
+				We are still working to define precise metrics to measure the quality of the
+				cut or simulation beyond qualitative evaluation of the image.
+			</p>
+			<div align="center">
+				<img src="images/cut_teapot.png" width=500px>
+			</div>
+			<h3>
+				Progress Relative to Plan
+			</h3>
+			<p>
+				The clean cut was the first stage of our plan, and it was useful in that it allowed
+				us to work with the half-edge data structure in the context of a cut. For example,
+				the dot product between the difference vector and normal vector was a very useful tool
+				to determine the direction in which the mesh needs to separate. Additionally, we have
+				some solid framework code for navigating the intersected edges via half-edge traversals.
+			</p>
+			<h3>
+				Updated Plan
+			</h3>
+			<p>
+				Our next steps will be to implement the stickiness slider and a
+				parameterization of the cutting plane, to define the different angles at which
+				we will cut the mesh. A stretch goal at this point would be animating the cut:
+				specifically because the motion of a material once it is cut relies heavily on the physics
+				of the material. To appropriately render this we may have to implement some of the force
+				modelling employed in Project 4.
+			</p>
+			<h3>
+				Additional Material
+			</h3>
+			<ul>
+				<li><a href="slides/slides.pdf">Slides</a></li>
+				<li><a href="https://youtu.be/Dzl-a8TI9fo">Video Link</a></li>
+			</ul>
+	</body>
+</html>
